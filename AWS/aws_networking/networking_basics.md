@@ -108,19 +108,44 @@
 
 ---
 
-5. `Virtual Private Gateway`:
-   
-   - A **Virtual Private Gateway** provides a secure connection between your **AWS VPC private subnets and external networks or services** (e.g., on-premises data centers, branch offices, or partner networks).
-  
-   - `Example`: Suppose you need to access servers or databases in a private subnet of your AWS VPC from an external network. Because private subnets do not have direct internet access, you cannot reach them over the public internet directly.
-   
-   - This is where a VGW comes into play:
-  
-     - You attach a `VGW` to your **VPC** and create a **VPN connection** between the external network and the VGW.
+5. Virtual Private Gateway (VPG) – Example: EC2 in Private Subnet Connecting to On-Prem PostgreSQL
 
-      - The connection is secure and encrypted, allowing external systems to communicate safely with private resources in AWS without exposing them
+A **Virtual Private Gateway (VPG)** enables a **secure, encrypted connection** between an **AWS VPC** and external private networks, such as on-premises data centers, homelabs, or branch offices.
 
-   - `VPG` provides use *a VPN * connection over the internet, so we  connect to the `AWS VPN Gateway` over the internet, instead of using our usual Internet Service Provider (ISP), to have a secure and encrypted connection to our private to our` private subnets`
+## Example Scenario
+
+You have:  
+- An **EC2 instance running a web application** in a **private subnet** within an AWS VPC  
+- A **PostgreSQL database running on an on-prem (homelab) server**
+
+Because:  
+- The EC2 instance is in a **private subnet** and does not have direct internet access  
+- The PostgreSQL server is **not publicly exposed**  
+
+They **cannot communicate over the public internet**.
+
+---
+
+## How a Virtual Private Gateway (VPG) Helps
+
+- Attach a **VPG** to your **VPC**  
+- Configure a **Site-to-Site VPN connection** between AWS and your on-prem network  
+- The VPN creates an **encrypted tunnel** over the internet between your VPC and the on-prem environment
+
+### Routing Configuration
+
+- Traffic from the EC2 instance destined for the on-prem network is sent to the **VPG**  
+- Traffic from the on-prem network destined for the VPC is sent through the **VPN tunnel**
+
+---
+
+## Benefits of This Setup
+
+- The EC2 instance in the private subnet can **securely connect to the on-prem PostgreSQL database** using private IP addresses  
+- The database is **not exposed to the public internet**  
+- **No NAT Gateway or public IPs** are required  
+- Traffic is **encrypted end-to-end** over the internet, ensuring secure communication
+
 
 ---
 
