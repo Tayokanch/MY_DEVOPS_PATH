@@ -7,11 +7,13 @@
    - it gives the customer full control of the **networking** in the cloud, with access to : `subnetting(IP Address)`, `Routing (Route Tables)`. `Firewalls (NACLs and Security Groups)`, `Gatways`
    - As an AWS customer, we can create mutilple VPC on account Example: `VPC  for Development`, `VPC for Staging`, `VPC Production`, `VPC for ApplicationName`
 
-   # VPC and Regions
+   ## VPC and Regions
    - A `VPC` is specific to a single region. 
    - A `VPC` act like a network boundary in an `AWS Region`
    - By default `VPCs` can't talk to other `Vpcs` or `resources` in same `AWS Region` unless they are explicitly configured to do so
    - Every `VPC` has a range of **IP Address** assigned to it called the `CIDR Block`. This **IP Addresses** are the IP resources deployed on this VPC will use
+
+ ![VPC and Region](../images/AWS_VPC.drawio.png)
 ---
 
 2. `Subnets`:
@@ -59,11 +61,14 @@
 
  ## VPC External Connectivity
    - When **subnet** are created first within AWS, that subnet by default is going to be a private subnet, therefore not exposed to the internet, if it need a public access, we have to explicitly change it to a public subnet to give access to the internet, and to make a Private Subnet public, we make use of a service called `Internet Gateway`
+
+ ![Subnets](../images/AWS_Subnetting.drawio%20(1).png)
 ---
 3. `Internet Gateway`
    
    - Internet Gateway are assigned to VPC and allows subnets in a VPC to communicate with the Internet and vice versa
    - Internet Gateway determines if a subnet is public or private
+   ![VPC and Region](../images/Internet_Gateway.gif)
 ---
 
 4. `NAT Gateway`
@@ -74,79 +79,84 @@
 
    ## `Internet Gateway and NAT Gateway Compliment each other`
 
-## Internet Gateway and NAT Gateway Complement Each Other
+   ## Internet Gateway and NAT Gateway Complement Each Other
 
-- An Internet Gateway (IGW) is attached to a VPC to allow **public subnets** to communicate with the internet.
+   - An Internet Gateway (IGW) is attached to a VPC to allow **public subnets** to communicate with the internet.
 
-  - Any EC2 instances in a public subnet with routes to the IGW can initiate outbound connections and receive inbound traffic from the internet.
+     - Any EC2 instances in a public subnet with routes to the IGW can initiate outbound connections and receive inbound traffic from the internet.
 
-- A NAT Gateway (NAT-GW) allows resources in **private subnets** to access the internet without exposing them publicly.
+   - A NAT Gateway (NAT-GW) allows resources in **private subnets** to access the internet without exposing them publicly.
 
-  - The NAT Gateway must be deployed in *a public subnet* and requires an *Internet Gateway* to route traffic out to the internet.
+     - The NAT Gateway must be deployed in *a public subnet* and requires an *Internet Gateway* to route traffic out to the internet.
 
-  - Resources inside a *Private Subnet* cannot receive inbound connections from the internet, but they can initiate outbound requests, and the responses will return securely.
-  
----
+     - Resources inside a *Private Subnet* cannot receive inbound connections from the internet, but they can initiate outbound requests, and the responses will return securely.
+     
+   ---
 
-## Example: EC2 in a Private Subnet Needing Internet Access
+   ## Example: EC2 in a Private Subnet Needing Internet Access
 
-`Imagine:`
-- An EC2 instance running in a private subnet (10.0.2.0/24)
-  
-- The instance needs to update packages (yum update / apt-get upgrade) or download software from the internet
+   `Imagine:`
+   - An EC2 instance running in a private subnet (10.0.2.0/24)
+     
+   - The instance needs to update packages (yum update / apt-get upgrade) or download software from the internet
 
-- We don’t want the instance to be publicly reachable for security
+   - We don’t want the instance to be publicly reachable for security
 
-`Flow of traffic:`
+   `Flow of traffic:`
 
-- The EC2 instance in the private subnet sends a request to the NAT Gateway (located in a public subnet).
+   - The EC2 instance in the private subnet sends a request to the NAT Gateway (located in a public subnet).
 
-- The NAT Gateway uses its Elastic IP and sends the request through the Internet Gateway to the internet.
+   - The NAT Gateway uses its Elastic IP and sends the request through the Internet Gateway to the internet.
 
-- The response comes back through the Internet Gateway → NAT Gateway → EC2 instance.
+   - The response comes back through the Internet Gateway → NAT Gateway → EC2 instance.
 
-
----
-
-5. Virtual Private Gateway (VPG) – Example: EC2 in Private Subnet Connecting to On-Prem PostgreSQL
-
-A **Virtual Private Gateway (VPG)** enables a **secure, encrypted connection** between an **AWS VPC** and external private networks, such as on-premises data centers, homelabs, or branch offices.
-
-## Example Scenario
-
-You have:  
-- An **EC2 instance running a web application** in a **private subnet** within an AWS VPC  
-- A **PostgreSQL database running on an on-prem (homelab) server**
-
-Because:  
-- The EC2 instance is in a **private subnet** and does not have direct internet access  
-- The PostgreSQL server is **not publicly exposed**  
-
-They **cannot communicate over the public internet**.
+   ![VPC and Region](../images/Internet_Gateway.gif)
 
 ---
 
-## How a Virtual Private Gateway (VPG) Helps
+5. `Virtual Private Gateway (VPG)`:
 
-- Attach a **VPG** to your **VPC**  
-- Configure a **Site-to-Site VPN connection** between AWS and your on-prem network  
-- The VPN creates an **encrypted tunnel** over the internet between your VPC and the on-prem environment
+   A **Virtual Private Gateway (VPG)** enables a **secure, encrypted connection** between an **AWS VPC** and external private networks, such as on-premises data centers, homelabs, or branch offices.
 
-### Routing Configuration
+   ## Example Scenario
 
-- Traffic from the EC2 instance destined for the on-prem network is sent to the **VPG**  
-- Traffic from the on-prem network destined for the VPC is sent through the **VPN tunnel**
+   You have:  
+   - An **EC2 instance running a web application** in a **private subnet** within an AWS VPC  
+   - A **PostgreSQL database running on an on-prem (homelab) server**
+
+   Because:  
+   - The EC2 instance is in a **private subnet** and does not have direct internet access  
+   - The PostgreSQL server is **not publicly exposed**  
+
+   They **cannot communicate over the public internet**.
+
+   ---
+
+   ## How a Virtual Private Gateway (VPG) Helps
+
+   - Attach a **VPG** to your **VPC**  
+   - Configure a **Site-to-Site VPN connection** between AWS and your on-prem network  
+   - The VPN creates an **encrypted tunnel** over the internet between your VPC and the on-prem environment
+
+   ### Routing Configuration
+
+   - Traffic from the EC2 instance destined for the on-prem network is sent to the **VPG**  
+   - Traffic from the on-prem network destined for the VPC is sent through the **VPN tunnel**
+
+   ---
+
+   ## Benefits of This Setup
+
+   - The EC2 instance in the private subnet can **securely connect to the on-prem PostgreSQL database** using private IP addresses  
+   - The database is **not exposed to the public internet**  
+   - **No NAT Gateway or public IPs** are required  
+   - Traffic is **encrypted end-to-end** over the internet, ensuring secure communication
+
+   ![VPG](../images/VPG.gif)
+
 
 ---
 
-## Benefits of This Setup
+6. `Direct Connects`: 
 
-- The EC2 instance in the private subnet can **securely connect to the on-prem PostgreSQL database** using private IP addresses  
-- The database is **not exposed to the public internet**  
-- **No NAT Gateway or public IPs** are required  
-- Traffic is **encrypted end-to-end** over the internet, ensuring secure communication
-
-
----
-
-6. `Direct Connects`: This is another way of connecting to AWS an Private Resources. This works by we as a customer going to a location called a `DX location` or a `Direct Connect Location` and have to physically connect our router to that specific Location. This location has a direct high-speed connection to **AWS regions** which allows us to secureluy access our resources with AWS through the Direct Connect. So instead of going over the internet, we have a direct and secure high-speed link to that locatio which provides `LOW LATENCY`
+   This is another way of connecting to AWS an Private Resources. This works by we as a customer going to a location called a `DX location` or a `Direct Connect Location` and have to physically connect our router to that specific Location. This location has a direct high-speed connection to **AWS regions** which allows us to secureluy access our resources with AWS through the Direct Connect. So instead of going over the internet, we have a direct and secure high-speed link to that locatio which provides `LOW LATENCY`
