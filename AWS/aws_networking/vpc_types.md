@@ -40,7 +40,7 @@
             - This would make our Subnet to be officially Public to the Internet
     
     6. `Security Group`: In Addition we could add **Security Group** To control the Traffic that go In and Out of our Resources Deployed on Each Subnets
-            - Cick on `Security Group`, Click `Create Security Group`
+            - Click on `Security Group`, Click `Create Security Group`
             - Give it a Name , Select the **VPC** it should be part of
             - Add Inbound Rules E.g **Type** ( HTTPS, HTPP, SSH), **PORT**(E.g 443), **Source** Either anywhere 0.0.0.0/0 or a Specific IP Address.
             - Click `Create Security Group`
